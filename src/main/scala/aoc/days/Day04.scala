@@ -20,7 +20,7 @@ object Day04 extends Day[Day04.Scratchcard, Int]:
     def winners: Set[Int] =
       winningNumbers.intersect(numbers)
 
-    def increaseBy(n: Int): Card =
+    def add(n: Int): Card =
       copy(instances = instances + n)
 
   override def parse(_part: Part)(input: String): Either[String, Scratchcard] =
@@ -34,7 +34,7 @@ object Day04 extends Day[Day04.Scratchcard, Int]:
       .foldLeft(cards.toMapBy(_.id)) { case (acc, card) =>
         (1 to card.winners.size).foldLeft(acc) { case (acc, i) =>
           acc.updatedWith(card.id + i)(
-            _.map(_.increaseBy(acc.getOrElse(card.id, card).instances))
+            _.map(_.add(acc.getOrElse(card.id, card).instances))
           )
         }
       }

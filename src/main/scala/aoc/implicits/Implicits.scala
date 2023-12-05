@@ -55,6 +55,12 @@ object all:
     def flatten: NonEmptyList[A] =
       nel.flatMap(identity)
 
+  extension [A, B](eit: Either[A, B])
+    def mapRight[C](f: B => C): Either[A, C] =
+      eit match
+        case Left(a)  => Left(a)
+        case Right(b) => Right(f(b))
+
   extension [F[_], A](fa: F[A])(using F: Foldable[F])
     def sumBy[B](f: A => B)(using B: Monoid[B]): B =
       F.foldLeft(fa, B.empty)((acc, a) => B.combine(acc, f(a)))
@@ -67,6 +73,9 @@ object all:
 
   def digitsInt: Parsley[Int] =
     some(digit).map(_.mkString.toInt)
+
+  def digitsLong: Parsley[Long] =
+    some(digit).map(x => x.mkString.toLong)
 
   extension [A](p: Parsley[A])
     def run(input: String): Either[String, A] =

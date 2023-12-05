@@ -3,6 +3,7 @@ package aoc
 import java.io.{File, PrintWriter, BufferedWriter, FileWriter}
 import cats.data.NonEmptyList
 import aoc.days._
+import aoc.implicits.all._
 
 class DaySuite[A, B] extends TestSuite {
   var day: Day[A, B] = null
@@ -18,10 +19,27 @@ class DaySuite[A, B] extends TestSuite {
       val obtained = day.parse(part)(input)
       assertRight(obtained, expected)
     }
+
+  def testParse[C](input: String, expected: C, f: A => C) =
+    test(s"test parser") {
+      val obtained = day.parse(part)(input)
+      assertRight(obtained.mapRight(f), expected)
+    }
   def testSolve(input: A, expected: B) =
     test(s"test solver") {
       val obtained = day.solvePart(part)(input)
       assertEquals(obtained, expected.solved)
+    }
+
+  def testParseAndSolve(input: String, expected: B) =
+    test(s"test parser and solver") {
+      val obtained = day.parse(part)(input)
+      obtained match
+        case Left(error) => assert(false, error)
+        case Right(parsed) => {
+          val obtained = day.solvePart(part)(parsed)
+          assertEquals(obtained, expected.solved)
+        }
     }
 
   // test for part of a day input file and output file
