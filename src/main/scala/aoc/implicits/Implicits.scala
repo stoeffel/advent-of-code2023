@@ -1,6 +1,7 @@
 package aoc.implicits
 
 import cats.data.NonEmptyList
+import scala.collection.immutable.NumericRange
 import cats.instances.all._
 import parsley.position.{pos => posParser}
 import cats.{Foldable, Monoid}
@@ -109,3 +110,36 @@ object all:
 
     def withPos: Parsley[(A, (Int, Int))] =
       (posParser <~> p).map(_.swap)
+
+  extension [A: Numeric](r: NumericRange[A])
+    def overlaps(other: NumericRange[A]): Boolean =
+      val numeric = implicitly[Numeric[A]]
+      numeric.compare(r.start, other.end) <= 0 && numeric.compare(
+        r.end,
+        other.start
+      ) >= 0
+
+    def overlap(other: NumericRange[A]): NumericRange[A] =
+      val numeric = implicitly[Numeric[A]]
+      val start = numeric.max(r.start, other.start)
+      val end = numeric.min(r.end, other.end)
+      r.copy(start = start, end = end, step = numeric.one)
+
+    def split(
+        other: NumericRange[A]
+    ): (NumericRange[A], List[NumericRange[A]]) =
+      val numeric = implicitly[Numeric[A]]
+      val overlap = r.overlap(other)
+      val nonOverlap = List(
+        r.copy(
+          start = r.start,
+          end = numeric.minus(overlap.start, numeric.one),
+          step = numeric.one
+        ),
+        r.copy(
+          start = numeric.plus(overlap.end, numeric.one),
+          end = r.end,
+          step = numeric.one
+        )
+      ).filter(x => numeric.compare(x.start, x.end) <= 0)
+      (overlap, nonOverlap)

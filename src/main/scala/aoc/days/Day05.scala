@@ -6,7 +6,7 @@ import cats.instances.all._
 import parsley.character._
 import cats.implicits._
 import aoc.implicits.all._
-import aoc.data.FromTo.all._
+import scala.collection.immutable.NumericRange
 
 object Day05 extends Day[Day05.Almanac, Long]:
 
@@ -19,7 +19,7 @@ object Day05 extends Day[Day05.Almanac, Long]:
   override def solvePart(_part: Part)(almanac: Almanac): Solution[Long] =
     almanac.seeds
       .flatMap(convert(almanac, Category.Seed, _))
-      .map(_.from)
+      .map(_.start)
       .min
       .solved
 
@@ -73,7 +73,7 @@ object Day05 extends Day[Day05.Almanac, Long]:
       maps: List[Pipeline]
   )
 
-  type SeedRange = FromTo[Long]
+  type SeedRange = NumericRange[Long]
 
   type Pipeline =
     Function1[SeedRange, Option[(SeedRange, List[SeedRange])]]
@@ -95,7 +95,7 @@ object Day05 extends Day[Day05.Almanac, Long]:
       _ <- string("seeds:")
       _ <- spaces
       seeds <- digitsLong.sepBy1(spaces)
-    } yield seeds.map(x => FromTo(x, x))
+    } yield seeds.map(x => NumericRange(x, x, 1.toLong))
 
   def seedRangesParser: Parsley[List[SeedRange]] =
     for {
@@ -109,7 +109,7 @@ object Day05 extends Day[Day05.Almanac, Long]:
       start <- digitsLong
       _ <- spaces
       l <- digitsLong
-    } yield FromTo(start, start + l - 1)
+    } yield NumericRange(start, start + l - 1, 1)
 
   def converterParser: Parsley[(Category, Converter)] =
     for {
@@ -150,11 +150,11 @@ object Day05 extends Day[Day05.Almanac, Long]:
   def toPipeline(start: Long, length: Long, dest: Long)(
       seedRange: SeedRange
   ): Option[(SeedRange, List[SeedRange])] =
-    val mapRange = FromTo(start, start + length - 1)
+    val mapRange = NumericRange(start, start + length - 1, 1.toLong)
     def convert = (x: Long) => x + dest - start
     if seedRange.overlaps(mapRange) then
       seedRange
         .split(mapRange)
-        .mapFirst(_.map(convert))
+        .mapFirst(r => NumericRange(convert(r.start), convert(r.end), 1.toLong))
         .some
     else None
