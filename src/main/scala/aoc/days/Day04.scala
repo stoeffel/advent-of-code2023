@@ -17,8 +17,8 @@ object Day04 extends Day[Day04.Scratchcard, Int]:
       numbers: Set[Int],
       instances: Int = 1
   ):
-    def winners: Set[Int] =
-      winningNumbers.intersect(numbers)
+    def winners: Int =
+      winningNumbers.intersect(numbers).size
 
     def add(n: Int): Card =
       copy(instances = instances + n)
@@ -27,19 +27,19 @@ object Day04 extends Day[Day04.Scratchcard, Int]:
     cardParser.lines.run(input)
 
   override def solvePart1(cards: Scratchcard): Solution[Int] =
-    cards.map(_.winners).sumBy(1 << _.size - 1).solved
+    cards.map(_.winners).sumBy(1 << _ - 1).solved
 
   override def solvePart2(cards: Scratchcard): Solution[Int] =
     cards
-      .foldLeft(cards.toMapBy(_.id)) { case (acc, card) =>
-        (1 to card.winners.size).foldLeft(acc) { case (acc, i) =>
-          acc.updatedWith(card.id + i)(
-            _.map(_.add(acc.getOrElse(card.id, card).instances))
-          )
+      .foldLeft(Map.empty[Int, Int]) { case (acc, card) =>
+        val instances = acc.getOrElse(card.id, 1)
+        (1 to card.winners).foldLeft(acc + (card.id -> instances)) {
+          case (acc, i) =>
+            acc.updatedWith(card.id + i)(x => (x.getOrElse(1) + instances).some)
         }
       }
-      .toList
-      .sumBy(_._2.instances)
+      .values
+      .sum
       .solved
 
   def cardParser: Parsley[Card] =
