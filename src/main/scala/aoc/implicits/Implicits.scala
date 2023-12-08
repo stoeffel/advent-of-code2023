@@ -45,6 +45,7 @@ object all:
         case a :: b :: Nil => Some(a -> b)
         case _             => None
 
+  extension [A](list: Seq[A])
     def toMapBy[B](f: A => B): Map[B, A] =
       list.map(a => f(a) -> a).toMap
 
@@ -110,6 +111,28 @@ object all:
 
     def withPos: Parsley[(A, (Int, Int))] =
       (posParser <~> p).map(_.swap)
+
+  extension [A: Numeric](a: A)
+    def dec: A =
+      val numeric = implicitly[Numeric[A]]
+      numeric.minus(a, numeric.one)
+
+  extension (a: BigInt)
+    def lcm(b: BigInt): BigInt =
+      val gcd = a.gcd(b)
+      a * b / gcd
+
+  extension (a: Int)
+    def toBigInt: BigInt =
+      BigInt(a)
+
+  extension (a: Seq[BigInt])
+    def lcm: BigInt =
+      a.reduce(_ lcm _)
+
+  extension (a: List[BigInt])
+    def lcm: BigInt =
+      a.reduce(_ lcm _)
 
   extension [A: Numeric](r: NumericRange[A])
     def overlaps(other: NumericRange[A]): Boolean =
