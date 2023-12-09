@@ -9,6 +9,7 @@ import parsley.Parsley, Parsley._
 import cats.implicits._
 import parsley.character.{satisfy, endOfLine, digit, string, char}
 import parsley.combinator.{
+  option,
   choice,
   some,
   manyUntil => originalManyUntil,
@@ -40,12 +41,16 @@ object all:
         case head :: Nil  => Some((head, head))
         case head :: tail => Some((head, tail.last))
 
+    def first2: Option[(A, A)] =
+      list match
+        case a :: b :: _ => Some((a, b))
+        case _           => None
+
     def toTuple: Option[(A, A)] =
       list match
         case a :: b :: Nil => Some(a -> b)
         case _             => None
 
-  extension [A](list: Seq[A])
     def toMapBy[B](f: A => B): Map[B, A] =
       list.map(a => f(a) -> a).toMap
 
@@ -72,9 +77,16 @@ object all:
 
   def digitInt: Parsley[Int] =
     digit.map(_.asDigit)
-
   def digitsInt: Parsley[Int] =
     some(digit).map(_.mkString.toInt)
+
+  def signedDigitsInt: Parsley[Int] =
+    for
+      sign <- option(char('-'))
+      digits <- digitsInt
+    yield sign match
+      case Some(_) => -digits
+      case None    => digits
 
   def digitsLong: Parsley[Long] =
     some(digit).map(x => x.mkString.toLong)
