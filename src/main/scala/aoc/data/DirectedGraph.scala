@@ -15,7 +15,7 @@ object all:
 
     def path[B](
         from: A,
-        predicate: A => Boolean,
+        predicate: (B, A) => Boolean,
         state: B
     )(step: (B, A, Vector[A]) => (A, B)): List[A]
 
@@ -33,19 +33,19 @@ object all:
         neighbours: Map[A, Vector[A]]
     ) extends DirectedGraph[A]:
 
-      def path[B](from: A, predicate: A => Boolean, state: B)(
+      def path[B](from: A, predicate: (B, A) => Boolean, state: B)(
           step: (B, A, Vector[A]) => (A, B)
       ): List[A] =
         @tailrec
         def pathHelper(from: A, state: B, acc: List[A]): List[A] =
-          if (predicate(from)) acc.reverse
+          if (predicate(state, from)) acc.reverse
           else
             step(state, from, neighbours(from)) match
               case (next, newState) => pathHelper(next, newState, from :: acc)
 
         pathHelper(from, state, List(from))
 
-  extension [A](xs: Map[A, Vector[A]])
+  extension [A](xs: Map[A, Seq[A]])
     def toDirectedGraph: DirectedGraph[A] =
       DirectedGraph(
         xs.keys.toVector,

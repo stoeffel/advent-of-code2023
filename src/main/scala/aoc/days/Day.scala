@@ -23,13 +23,13 @@ import PartIsPart._
 
 enum Solution[+A] derives CanEqual:
   case Solved(value: A)
-  case Unsolved
+  case Unsolved(msg: String)
 
 implicit val solutionFunctor: Functor[Solution] = new Functor[Solution]:
   def map[A, B](fa: Solution[A])(f: A => B): Solution[B] =
     fa match
       case Solution.Solved(value) => Solution.Solved(f(value))
-      case Solution.Unsolved      => Solution.Unsolved
+      case Solution.Unsolved(msg) => Solution.Unsolved(msg)
 
 implicit class SolutionOps[A](result: A):
   def solved: Solution[A] = Solution.Solved(result)
@@ -56,7 +56,11 @@ trait Day[A, B]:
       case Part.Part2 => solvePart2(input)
 
   def solvePart1(input: A): Solution[B] =
-    Solution.Unsolved
+    Solution.Unsolved("Not implemented")
 
   def solvePart2(input: A): Solution[B] =
-    Solution.Unsolved
+    Solution.Unsolved("Not implemented")
+
+  def unsolved(msg: String): Solution[B] =
+    println(s"Day $this: $msg")
+    Solution.Unsolved(msg)

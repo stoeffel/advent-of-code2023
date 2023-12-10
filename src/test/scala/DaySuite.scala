@@ -56,7 +56,7 @@ class DaySuite[A, B] extends TestSuite {
           // write output file
           val outputFilename = s"day${day.toString}part${part.toString}"
           obtained match
-            case Solution.Unsolved => assert(false, "solution not found")
+            case Solution.Unsolved(msg) => assert(false, s"Unsolved: ${msg}")
             case Solution.Solved(value) => {
               val output = value.toString
               // create and write output file

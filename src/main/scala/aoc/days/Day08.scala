@@ -19,9 +19,12 @@ object Day08 extends Day[Day08.Network, BigInt]:
   ):
     def pathLength(start: Node, endPredicate: Node => Boolean): BigInt =
       graph
-        .path(start, endPredicate, instructions) {
-          (instructions, _, neighbours) =>
-            (neighbours(instructions.focus.ordinal), instructions.nextCycle)
+        .path(
+          start,
+          (_: Zipper[Instruction], x: Node) => endPredicate(x),
+          instructions
+        ) { (instructions, _, neighbours) =>
+          (neighbours(instructions.focus.ordinal), instructions.nextCycle)
         }
         .length
         .dec

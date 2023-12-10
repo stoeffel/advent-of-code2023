@@ -178,3 +178,7 @@ object all:
         )
       ).filter(x => numeric.compare(x.start, x.end) <= 0)
       (overlap, nonOverlap)
+
+  extension (bool: Boolean)
+    def toOption[A](a: => A): Option[A] =
+      if bool then Some(a) else None
