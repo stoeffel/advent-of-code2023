@@ -29,9 +29,19 @@ object all:
     def right: Vec2 =
       this.copy(x = this.x + 1)
 
+    def add(other: Vec2): Vec2 =
+      this + other
+
     def +(other: Vec2): Vec2 =
       Vec2(this.x + other.x, this.y + other.y)
+
+    def manhattanDistance(other: Vec2): Int =
+      (this.x - other.x).abs + (this.y - other.y).abs
 
   extension (tuple: (Int, Int))
     def toVec2: Vec2 =
       Vec2(tuple._1, tuple._2)
+
+  extension (pair: (Vec2, Vec2))
+    def manhattanDistance: BigInt =
+      pair._1.manhattanDistance(pair._2)

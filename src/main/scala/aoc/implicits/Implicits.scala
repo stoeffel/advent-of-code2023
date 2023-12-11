@@ -2,6 +2,7 @@ package aoc.implicits
 
 import cats.data.NonEmptyList
 import scala.collection.immutable.NumericRange
+import scala.collection.parallel._
 import cats.instances.all._
 import parsley.position.{pos => posParser}
 import cats.{Foldable, Monoid}
@@ -53,6 +54,14 @@ object all:
 
     def toMapBy[B](f: A => B): Map[B, A] =
       list.map(a => f(a) -> a).toMap
+
+  extension [A](seq: Seq[A])
+    def mapIf(cond: A => Boolean)(f: A => A): Seq[A] =
+      seq.map(a => if cond(a) then f(a) else a)
+
+  extension [A](seq: ParSeq[A])
+    def mapIf(cond: A => Boolean)(f: A => A): ParSeq[A] =
+      seq.map(a => if cond(a) then f(a) else a)
 
   extension [A](nel: NonEmptyList[IterableOnce[A]])
     def flatten: List[A] =

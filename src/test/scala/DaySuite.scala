@@ -42,6 +42,10 @@ class DaySuite[A, B] extends TestSuite {
         }
     }
 
+  def readInputFile: String =
+    val filename = s"day${day.toString}"
+    io.Source.fromFile(s"input/${filename}.txt").mkString
+
   // test for part of a day input file and output file
   def testWithFile() =
     test(s"solves") {
