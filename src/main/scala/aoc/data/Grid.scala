@@ -38,32 +38,76 @@ object all:
     override def height(as: List[Vec2]): Int =
       as.map(_.y).max - as.map(_.y).min + 1
 
-  case class Grid[A: HasBoundingBox](items: List[A]):
-    val grid: Map[Vec2, A] =
-      items
-        .flatMap(item =>
-          (item.pos.x until item.pos.x + item.width)
-            .flatMap(x =>
-              (item.pos.y until item.pos.y + item.height)
-                .map(y => Vec2(x, y) -> item)
-            )
-        )
-        .toMap
+  trait Grid[A]:
+    def values: List[A]
 
-    def values: List[A] =
-      items
+    def items: List[A]
 
-    def neighboursOf(pos: Vec2): List[A] =
-      pos.neighbours.flatMap(grid.get).distinctBy(_.pos)
+    def neighboursOf(pos: Vec2): List[A]
 
-    def above(pos: Vec2): Option[A] =
-      grid.get(pos.up)
+    def above(pos: Vec2): Option[A]
 
-    def below(pos: Vec2): Option[A] =
-      grid.get(pos.down)
+    def below(pos: Vec2): Option[A]
 
-    def leftOf(pos: Vec2): Option[A] =
-      grid.get(pos.left)
+    def leftOf(pos: Vec2): Option[A]
 
-    def rightOf(pos: Vec2): Option[A] =
-      grid.get(pos.right)
+    def rightOf(pos: Vec2): Option[A]
+
+    val rows: Map[Int, List[A]]
+
+    val cols: Map[Int, List[A]]
+
+  object Grid:
+    def apply[A: HasBoundingBox](items: List[A]): Grid[A] =
+      GridImpl(items)
+
+    private case class GridImpl[A: HasBoundingBox](items: List[A])
+        extends Grid[A]:
+
+      val rows: Map[Int, List[A]] =
+        items.groupBy(_.pos.y)
+
+      val cols: Map[Int, List[A]] =
+        items.groupBy(_.pos.x)
+
+      val grid: Map[Vec2, A] =
+        items
+          .flatMap(item =>
+            (item.pos.x until item.pos.x + item.width)
+              .flatMap(x =>
+                (item.pos.y until item.pos.y + item.height)
+                  .map(y => Vec2(x, y) -> item)
+              )
+          )
+          .toMap
+
+      def values: List[A] =
+        items
+
+      def neighboursOf(pos: Vec2): List[A] =
+        pos.neighbours.flatMap(grid.get).distinctBy(_.pos)
+
+      def above(pos: Vec2): Option[A] =
+        grid.get(pos.up)
+
+      def below(pos: Vec2): Option[A] =
+        grid.get(pos.down)
+
+      def leftOf(pos: Vec2): Option[A] =
+        grid.get(pos.left)
+
+      def rightOf(pos: Vec2): Option[A] =
+        grid.get(pos.right)
+
+    given [A: HasBoundingBox]: HasBoundingBox[Grid[A]] with
+      override def pos(grid: Grid[A]): Vec2 =
+        grid.items.map(_.pos).minBy(_.toTuple)
+
+      override def maxPos(grid: Grid[A]): Vec2 =
+        grid.items.map(_.maxPos).maxBy(_.toTuple)
+
+      override def width(grid: Grid[A]): Int =
+        maxPos(grid).x - pos(grid).x
+
+      override def height(grid: Grid[A]): Int =
+        maxPos(grid).y - pos(grid).y
