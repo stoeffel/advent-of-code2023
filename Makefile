@@ -9,3 +9,5 @@ test: build
 watch:
 	sbt ~test -deprecation
 
+run:
+	sbt ~run

@@ -1,0 +1,46 @@
+layout cwd="/home/stoeffel/aoc" {
+   default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+   tab focus=true name="aoc" {
+        pane split_direction="vertical" {
+            pane stacked=true {
+                pane name="watch" {
+                    command "nix"
+                    args "develop" "--command" "make" "watch"
+                }
+            }
+            pane name="editor" size="70%" focus=true {
+                command "v"
+            }
+        }
+    }
+    tab name="terminal" {
+        pane
+        pane command="yazi" size="40%"
+    }
+
+    tab name="solves" {
+                pane name="solves" {
+                    command "nix"
+                    args "develop" "--command" "make" "run"
+                }
+    }
+}
+keybinds {
+    shared {
+        bind "Ctrl k" {
+          Run "zellij" "run" "--floating" "--close-on-exit" "--" "fzf-lazygit" {
+            width "80%"
+            height "80%"
+            close_on_exit true
+          }
+        }
+    }
+}
