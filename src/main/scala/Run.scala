@@ -91,12 +91,12 @@ def runPart(dayStr: String, part: Part): (String, Long) =
         case Right(parsed) =>
           val result = day.solvePart(part)(parsed)
           val end = System.currentTimeMillis()
-          // compare with output file
-          val outputFilename = s"day${day.toString}part${part.toString}"
-          val expected =
-            os.read(os.pwd / "output" / s"$outputFilename.txt")
           result match
             case Solution.Unsolved(msg) => ("🚧", 0)
             case Solution.Solved(value) =>
+              // compare with output file
+              val outputFilename = s"day${day.toString}part${part.toString}"
+              val expected =
+                os.read(os.pwd / "output" / s"$outputFilename.txt")
               if value.toString == expected then ("🌟", end - start)
               else ("💀", end - start)

@@ -1,6 +1,7 @@
 package aoc.implicits
 
 import cats.data.NonEmptyList
+import scala.collection.parallel.CollectionConverters._
 import scala.collection.immutable.NumericRange
 import scala.collection.parallel._
 import cats.instances.all._
@@ -35,7 +36,22 @@ object all:
       val (first, second) = tuple
       (f(first), g(second))
 
+  extension (bool: Boolean)
+    def toInt: Int =
+      if bool then 1 else 0
+
+  extension [A](i: A)
+    def repeat(n: Int): List[A] =
+      if n == 0 then Nil
+      else i :: repeat(n - 1)
+
   extension [A](list: List[A])
+    def join(sep: A): List[A] =
+      list.mapWithIndex { (a, i) =>
+        if i == 0 then List(a)
+        else sep :: a :: Nil
+      }.flatten
+
     def firstAndLast: Option[(A, A)] =
       list match
         case Nil          => None

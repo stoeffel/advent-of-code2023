@@ -1,6 +1,11 @@
 package aoc.days
 
 import cats._
+import scala.collection.mutable
+import scala.annotation.StaticAnnotation
+import scala.collection.mutable
+import scala.language.experimental.macros
+import scala.quoted._
 
 enum Part:
   case Part1
@@ -64,3 +69,9 @@ trait Day[A, B]:
   def unsolved(msg: String): Solution[B] =
     println(s"Day $this: $msg")
     Solution.Unsolved(msg)
+
+trait Memoize:
+  val cache = mutable.Map.empty[Any, Any]
+  def memoize[I, O](f: I => O): I => O =
+    val c = cache.asInstanceOf[mutable.Map[I, O]]
+    a => c.getOrElseUpdate(a, f(a))
