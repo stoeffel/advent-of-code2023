@@ -2,9 +2,6 @@ package aoc
 
 import aoc.days._
 import aoc.days.Day13._
-import munit.Clue.generate
-import aoc.data.Grid.all._
-import aoc.data.Vec2.all._
 
 val example1Day13 =
   """|#.##..##.

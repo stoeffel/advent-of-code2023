@@ -36,6 +36,11 @@ object all:
       val (first, second) = tuple
       (f(first), g(second))
 
+  extension [A](tuple: (A, A))
+    def mapBoth[B](f: A => B): (B, B) =
+      val (first, second) = tuple
+      (f(first), f(second))
+
   extension (bool: Boolean)
     def toInt: Int =
       if bool then 1 else 0

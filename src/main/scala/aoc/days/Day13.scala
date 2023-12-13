@@ -43,18 +43,17 @@ object Day13 extends Day[Day13.Patterns, Int] with Memoize:
       (1 until p.width).par
         .find { i =>
           val full = p.dropColumns(i)
-          val (left, right) = full.leftRight
+          val (left, right) = full.split
           full.width.even && left.compare(smudges)(right)
         }
 
     def compare(smudges: Boolean)(other: Pattern): Boolean =
-      memoize[(Boolean, Pattern, Pattern), Boolean] {
-        case (smudges, it, other) =>
-          it.zip(other.flip).count(_ != _) == smudges.toInt
+      memoize[(Boolean, Pattern, Pattern), Boolean] { (smudges, it, other) =>
+        it.zip(other.flip).count(_ != _) == smudges.toInt
       }((smudges, p, other))
 
-    def leftRight: (Pattern, Pattern) =
-      p.transpose.splitAt(p.width / 2).mapBoth(_.transpose, _.transpose)
+    def split: (Pattern, Pattern) =
+      p.transpose.splitAt(p.width / 2).mapBoth(_.transpose)
 
     def dropColumns(n: Int): Pattern =
       p.map(_.drop(n))
