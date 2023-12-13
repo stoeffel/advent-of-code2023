@@ -8,7 +8,7 @@ import cats.implicits._
 import cats.syntax.all._
 import aoc.implicits.all._
 
-object Day02 extends Day[Day02.Games, Int]:
+object Day02 extends Day[Day02.Games, Int] with Memoize:
   type Games = List[Day02.Game]
 
   override def parse(_part: Part)(input: String): Either[String, Games] =
@@ -37,7 +37,9 @@ object Day02 extends Day[Day02.Games, Int]:
       red > bounds.red || green > bounds.green || blue > bounds.blue
 
     def power: Int =
-      red * green * blue
+      memoize[GameSet, Int] { case GameSet(red, green, blue) =>
+        red * green * blue
+      }(this)
 
     def max(other: GameSet): GameSet =
       GameSet(red.max(other.red), green.max(other.green), blue.max(other.blue))

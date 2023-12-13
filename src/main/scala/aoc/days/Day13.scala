@@ -7,7 +7,7 @@ import parsley.character._
 import cats.implicits._
 import aoc.implicits.all._
 
-object Day13 extends Day[Day13.Patterns, Int]:
+object Day13 extends Day[Day13.Patterns, Int] with Memoize:
   type Patterns = List[Pattern]
   type Pattern = List[List[Surface]]
   enum Surface:
@@ -40,7 +40,7 @@ object Day13 extends Day[Day13.Patterns, Int]:
       v orElse h.map(_ * 100) getOrElse 0
 
     def findAxis(smudges: Boolean): Option[Int] =
-      (1 until p.width)
+      (1 until p.width).par
         .find { i =>
           val full = p.dropColumns(i)
           val (left, right) = full.leftRight
@@ -48,7 +48,10 @@ object Day13 extends Day[Day13.Patterns, Int]:
         }
 
     def compare(smudges: Boolean)(other: Pattern): Boolean =
-      p.zip(other.flip).count(_ != _) == smudges.toInt
+      memoize[(Boolean, Pattern, Pattern), Boolean] {
+        case (smudges, it, other) =>
+          it.zip(other.flip).count(_ != _) == smudges.toInt
+      }((smudges, p, other))
 
     def leftRight: (Pattern, Pattern) =
       p.transpose.splitAt(p.width / 2).mapBoth(_.transpose, _.transpose)
