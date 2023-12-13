@@ -154,12 +154,22 @@ object all:
       val numeric = implicitly[Numeric[A]]
       numeric.minus(a, numeric.one)
 
+    def min(b: A): A =
+      val numeric = implicitly[Numeric[A]]
+      numeric.min(a, b)
+
+    def max(b: A): A =
+      val numeric = implicitly[Numeric[A]]
+      numeric.max(a, b)
+
   extension (a: BigInt)
     def lcm(b: BigInt): BigInt =
       val gcd = a.gcd(b)
       a * b / gcd
 
   extension (a: Int)
+    def even: Boolean =
+      a % 2 == 0
     def toBigInt: BigInt =
       BigInt(a)
 

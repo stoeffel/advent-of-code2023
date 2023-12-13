@@ -5,6 +5,9 @@ object all:
     def toTuple: (Int, Int) =
       (x, y)
 
+    def swap: Vec2 =
+      Vec2(y, x)
+
     def neighbours: List[Vec2] =
       List(
         this.copy(x = this.x - 1),

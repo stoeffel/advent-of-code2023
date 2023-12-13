@@ -70,7 +70,7 @@ class DaySuite[A, B] extends TestSuite {
               if (outputFile.exists) {
                 val outputFromFile =
                   io.Source.fromFile(s"output/${outputFilename}.txt").mkString
-                assertEquals(outputFromFile, output)
+                assertEquals(output, outputFromFile)
               } else {
                 val bw = new BufferedWriter(new FileWriter(outputFile))
                 bw.write(output)

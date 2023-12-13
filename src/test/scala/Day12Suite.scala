@@ -117,37 +117,6 @@ val parsedExample1Day12 =
   )
 
 class Day12Part1 extends DaySuite(Day12, Part.Part1):
-  // test("groups") {
-  //   assertEquals(
-  //     List(`?`, `#`, `#`, `#`, `?`, `?`, `?`, `?`, `?`, `?`, `?`, `?`).groups,
-  //     List((12, `?`))
-  //   )
-  //   assertEquals(
-  //     List(`?`, `#`, `.`, `#`, `#`, `#`, `.`, `?`, `?`, `.`, `#`, `?`).groups,
-  //     List((2, `?`), (1, `.`), (3, `#`), (1, `.`), (2, `?`), (1, `.`), (2, `?`))
-  //   )
-  // }
-  // test("allArrangements") {
-  //   assertEquals(
-  //     Record(
-  //       List(`.`, `#`, `#`, `.`, `#`, `#`, `#`),
-  //       List(2, 3)
-  //     ).allArrangements,
-  //     List(
-  //       List(`.`, `#`, `#`, `.`, `#`, `#`, `#`)
-  //     )
-  //   )
-  //   assertEquals(
-  //     Record(
-  //       List(`.`, `?`, `?`, `.`, `#`, `#`, `#`),
-  //       List(1, 3)
-  //     ).allArrangements,
-  //     List(
-  //       List(`.`, `#`, `.`, `.`, `#`, `#`, `#`),
-  //       List(`.`, `.`, `#`, `.`, `#`, `#`, `#`)
-  //     )
-  //   )
-  // }
   testParse(example1Day12, parsedExample1Day12)
   testSolve(List(parsedExample1Day12(0)), 1)
   testSolve(List(parsedExample1Day12(1)), 4)

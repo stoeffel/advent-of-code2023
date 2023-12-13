@@ -77,6 +77,8 @@ object all:
 
     val rows: Iterable[Int]
 
+    val rowItems: List[List[A]]
+
     val cols: Iterable[Int]
 
     def allPairs: List[(A, A)]
@@ -95,6 +97,9 @@ object all:
 
       val rows: Iterable[Int] =
         items.groupBy(_.pos.y).keys
+
+      val rowItems: List[List[A]] =
+        items.groupBy(_.pos.y).toList.sortBy(_._1).map(_._2)
 
       val cols: Iterable[Int] =
         items.groupBy(_.pos.x).keys
