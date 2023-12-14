@@ -16,26 +16,41 @@ import os._
   val min = times.map(_._3).min
   val range = max - min
   val sparkline = times.map { case (d, p, t) =>
-    val n = (((t - min) / range.toDouble) * 7).toInt
-    val spark = "▁▂▃▄▅▆▇█" (n)
-    val dStr =
-      if p == 2 then "  "
-      else d.toString.reverse.padTo(2, '0').reverse
-    List(spark, dStr(0), dStr(1), "¹²" (p - 1))
+    val n = (((t - min) / range.toDouble) * 21).toInt
+    val spark =
+      if n <= 14 then " "
+      else "▁▂▃▄▅▆▇█" (n - 14)
+    val spark2 =
+      if n <= 7 then " "
+      else if n >= 14 then "█"
+      else "▁▂▃▄▅▆▇█" (n - 7)
+    val spark3 = "▁▂▃▄▅▆▇█" (n.min(7))
+
+    val dStr = d.toString.reverse.padTo(2, '0').reverse
+    val x = (p - 1) * 2
+    List(
+      s"$spark$spark",
+      s"$spark2$spark2",
+      s"$spark3$spark3",
+      s"╰$dStr╯".substring(x, x + 2),
+      "¹  ²".substring(x, x + 2)
+    )
   }.transpose
 
   println(s"---------------------------")
   sparkline match
     case Vector(
           spark: Vector[String],
-          d1: Vector[String],
-          d2: Vector[String],
+          spark2: Vector[String],
+          spark3: Vector[String],
+          d: Vector[String],
           p: Vector[String]
         ) =>
-      println(s"Time:  ${spark.mkString("")}")
+      println(s"       ${spark.mkString("")}")
+      println(s"       ${spark2.mkString("")}")
+      println(s"Time:  ${spark3.mkString("")}")
       println(s"Part:  ${p.mkString("")}")
-      println(s"Day:   ${d1.mkString("")}")
-      println(s"       ${d2.mkString("")}")
+      println(s"Day:   ${d.mkString("")}")
     case _ => ()
 
   println(s"---------------------------")
