@@ -57,6 +57,11 @@ object all:
         else sep :: a :: Nil
       }.flatten
 
+    def splitted(sep: A): List[List[A]] =
+      list.span(_ != sep) match
+        case (before, `sep` :: after) => before :: after.splitted(sep)
+        case _                        => List(list)
+
     def firstAndLast: Option[(A, A)] =
       list match
         case Nil          => None
@@ -154,10 +159,19 @@ object all:
     def withPos: Parsley[(A, (Int, Int))] =
       (posParser <~> p).map(_.swap)
 
+  object Function:
+    def repeat[I](n: Int)(func: I => I): I => I =
+      if n == 0 then identity
+      else func.andThen(repeat(n - 1)(func))
+
   extension [A: Numeric](a: A)
     def dec: A =
       val numeric = implicitly[Numeric[A]]
       numeric.minus(a, numeric.one)
+
+    def inc: A =
+      val numeric = implicitly[Numeric[A]]
+      numeric.plus(a, numeric.one)
 
     def min(b: A): A =
       val numeric = implicitly[Numeric[A]]

@@ -41,6 +41,11 @@ object all:
     def manhattanDistance(other: Vec2): Int =
       (this.x - other.x).abs + (this.y - other.y).abs
 
+  given Ordering[Vec2] with
+    def compare(a: Vec2, b: Vec2): Int =
+      if a.y == b.y then a.x - b.x
+      else a.y - b.y
+
   extension (tuple: (Int, Int))
     def toVec2: Vec2 =
       Vec2(tuple._1, tuple._2)

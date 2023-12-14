@@ -61,6 +61,10 @@ object all:
       maxPos(as).y - pos(as).y + 1
 
   trait Grid[A]:
+    def ::(a: A): Grid[A]
+
+    def get(pos: Vec2): Option[A]
+
     def values: List[A]
 
     def items: List[A]
@@ -81,7 +85,12 @@ object all:
 
     val cols: Iterable[Int]
 
+    def colItems: Map[Int, List[A]]
+
     def allPairs: List[(A, A)]
+
+    def map[B: HasBoundingBox](f: A => B): Grid[B] =
+      Grid(items.map(f))
 
   object Grid:
     def apply[A: HasBoundingBox](items: List[A]): Grid[A] =
@@ -89,17 +98,26 @@ object all:
 
     private case class GridImpl[A: HasBoundingBox](items: List[A])
         extends Grid[A]:
+
+      def ::(a: A): GridImpl[A] =
+        GridImpl(a :: items)
+
+      def get(pos: Vec2): Option[A] =
+        items.find(_.pos == pos)
+
       def allPairs: List[(A, A)] =
         items
           .combinations(2)
           .toList
           .flatMap(_.first2)
-
       val rows: Iterable[Int] =
         items.groupBy(_.pos.y).keys
 
       val rowItems: List[List[A]] =
         items.groupBy(_.pos.y).toList.sortBy(_._1).map(_._2)
+
+      def colItems: Map[Int, List[A]] =
+        items.groupBy(_.pos.x)
 
       val cols: Iterable[Int] =
         items.groupBy(_.pos.x).keys

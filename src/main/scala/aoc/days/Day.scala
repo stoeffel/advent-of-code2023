@@ -73,5 +73,6 @@ trait Day[A, B]:
 trait Memoize:
   val cache = mutable.Map.empty[Any, Any]
   def memoize[I, O](f: I => O): I => O =
-    val c = cache.asInstanceOf[mutable.Map[I, O]]
-    a => c.getOrElseUpdate(a, f(a))
+    val name = f.getClass.getSimpleName.stripSuffix("$")
+    val c = cache.asInstanceOf[mutable.Map[(String, I), O]]
+    a => c.getOrElseUpdate((name, a), f(a))
